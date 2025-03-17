@@ -4,6 +4,15 @@ import { Plus } from "lucide-react";
 import { RootState } from "../store/todoStore";
 import { addTodo } from "../store/slices/todoSlice";
 import { Textarea } from "./ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 export function AddTodo() {
   const dispatch = useDispatch();
@@ -30,7 +39,7 @@ export function AddTodo() {
   return (
     <form onSubmit={handleSubmit} className="mb-6 space-y-4">
       <div>
-        <input
+        <Input
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -49,25 +58,22 @@ export function AddTodo() {
       </div>
 
       <div className="flex gap-2">
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="flex-1 rounded-md border px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800"
-        >
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-
-        <button
-          type="submit"
-          className="flex items-center gap-2 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-        >
+        <Select value={category} onValueChange={setCategory}>
+          <SelectTrigger className="flex-1 rounded-md border px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800">
+            <SelectValue placeholder="Select a category" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.id}>
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button className="flex items-center gap-2 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none">
           <Plus size={20} />
           Add Todo
-        </button>
+        </Button>
       </div>
     </form>
   );
