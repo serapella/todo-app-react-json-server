@@ -1,18 +1,19 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { cn } from "../lib/utils";
 import { RootState } from "../store/todoStore";
 import { toggleTodo, removeTodo } from "../store/slices/todoSlice";
 
 export function TodoList() {
   const dispatch = useDispatch();
-  const { todos, filter, statusFilter } = useSelector(
+  const { todos, categories, filter, statusFilter } = useSelector(
     (state: RootState) => state.todo,
   );
 
   const filteredTodos = todos.filter((todo) => {
     const categoryMatch =
-      filter === "All Categories" ? true : todo.category === filter;
+      filter === "All Categories"
+        ? true
+        : categories.find((c) => c.id === todo.category)?.name === filter;
     const statusMatch =
       statusFilter === "All Status"
         ? true
@@ -22,17 +23,14 @@ export function TodoList() {
     return categoryMatch && statusMatch;
   });
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case "Work":
-        return "text-blue-600 dark:text-blue-400";
-      case "Personal":
-        return "text-red-600 dark:text-red-400";
-      case "Other":
-        return "text-gray-600 dark:text-gray-400";
-      default:
-        return "text-gray-600 dark:text-gray-400";
-    }
+  const getCategoryColor = (categoryId: string) => {
+    const category = categories.find((c) => c.id === categoryId);
+    return category?.color || "#94a3b8";
+  };
+
+  const getCategoryName = (categoryId: string) => {
+    const category = categories.find((c) => c.id === categoryId);
+    return category?.name || "Uncategorized";
   };
 
   return (
@@ -49,22 +47,28 @@ export function TodoList() {
             className="border-input text-primary focus:ring-ring h-5 w-5 rounded"
           />
 
-          <span
-            className={cn(
-              "flex-1",
-              todo.completed && "text-muted-foreground line-through",
-            )}
-          >
-            {todo.text}
-          </span>
+          <div className="flex-1">
+            <span
+              className={
+                "block font-medium" +
+                (todo.completed ? " text-muted-foreground line-through" : "")
+              }
+            >
+              {todo.text}
+            </span>
+            <span className="text-muted-foreground text-sm">
+              {todo.description}
+            </span>
+          </div>
 
           <span
-            className={cn(
-              "rounded-full px-3 py-1 text-sm",
-              getCategoryColor(todo.category),
-            )}
+            className="rounded-full px-3 py-1 text-sm font-medium"
+            style={{
+              backgroundColor: getCategoryColor(todo.category) + "20",
+              color: getCategoryColor(todo.category),
+            }}
           >
-            {todo.category}
+            {getCategoryName(todo.category)}
           </span>
 
           <button

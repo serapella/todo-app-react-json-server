@@ -1,4 +1,8 @@
-export type TodoCategory = "Work" | "Personal" | "Other";
+export type TodoCategory = {
+  id: string;
+  name: "Work" | "Personal" | "Other" | "Health" | "Learning" | "Shopping";
+  color: string;
+};
 
 import { configureStore } from "@reduxjs/toolkit";
 import todoReducer from "./slices/todoSlice";
