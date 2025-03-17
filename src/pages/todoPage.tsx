@@ -4,7 +4,7 @@ import { AddTodo } from "../components/AddTodo";
 
 export function TodoPage() {
   return (
-    <div className="space-y-6">
+    <div>
       <AddTodo />
       <TodoFilters />
       <TodoList />

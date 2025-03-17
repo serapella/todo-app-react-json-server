@@ -2,6 +2,13 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/todoStore";
 import { toggleTodo, removeTodo } from "../store/slices/todoSlice";
+import { Button } from "./ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 export function TodoList() {
   const dispatch = useDispatch();
@@ -40,10 +47,9 @@ export function TodoList() {
           key={todo.id}
           className="bg-card flex items-center gap-3 rounded-lg border p-4 shadow-sm"
         >
-          <input
-            type="checkbox"
+          <Checkbox
             checked={todo.completed}
-            onChange={() => dispatch(toggleTodo(todo.id))}
+            onCheckedChange={() => dispatch(toggleTodo(todo.id))}
             className="border-input text-primary focus:ring-ring h-5 w-5 rounded"
           />
 
@@ -56,11 +62,17 @@ export function TodoList() {
             >
               {todo.text}
             </span>
-            <span className="text-muted-foreground text-sm">
-              {todo.description}
-            </span>
+            <Collapsible>
+              <CollapsibleTrigger className="text-muted-foreground mt-2 cursor-pointer text-sm hover:underline">
+                {todo.description ? "Show Description" : "No Description"}
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <span className="text-muted-foreground text-sm">
+                  {todo.description}
+                </span>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
-
           <span
             className="rounded-full px-3 py-1 text-sm font-medium"
             style={{
@@ -71,19 +83,19 @@ export function TodoList() {
             {getCategoryName(todo.category)}
           </span>
 
-          <button
+          <Button
             onClick={() => {}}
             className="text-muted-foreground hover:text-foreground p-1"
           >
             <Pencil size={18} />
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => dispatch(removeTodo(todo.id))}
             className="text-muted-foreground hover:text-destructive p-1"
           >
             <Trash2 size={18} />
-          </button>
+          </Button>
         </div>
       ))}
     </div>
