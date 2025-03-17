@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { TodoCategory } from "../todoStore"; // Importing the type
+import { TodoCategory } from "../todoStore";
 
 export interface Todo {
   id: string;
   text: string;
-  category: TodoCategory; // Using the string literal type directly
+  category: TodoCategory;
   completed: boolean;
 }
 

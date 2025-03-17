@@ -1,5 +1,5 @@
 import { TodoList } from "@/components/TodoList";
 
-export function HomePage() {
+export function TodoPage() {
   return <TodoList />;
 }
