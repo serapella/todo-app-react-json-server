@@ -71,3 +71,15 @@ export const useTheme = () => {
 
   return context;
 };
+
+// ModeToggle (src/components/ui/mode-toggle.tsx):
+// Een meer geavanceerde component met een dropdown menu
+// Biedt 3 opties: Light, Dark en System
+// Gebruikt Radix UI's DropdownMenu component
+// Heeft een meer uitgebreide UI met een button en dropdown items
+// ThemeSwitcher (src/components/theme-switcher.tsx):
+// Een eenvoudigere toggle switch
+// Wisselt alleen tussen light/dark
+// Gebruikt een enkele button
+// Heeft een simpelere UI met alleen een icon switch
+// ok maar welke gebruiken we dan? let op, verwijder wat niet nodig is!
