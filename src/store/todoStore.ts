@@ -1,7 +1,7 @@
 export type TodoCategory = "Work" | "Personal" | "Other";
 
 import { configureStore } from "@reduxjs/toolkit";
-import todoReducer from "./slices/todo-slice";
+import todoReducer from "./slices/todoSlice";
 
 export const store = configureStore({
   reducer: {

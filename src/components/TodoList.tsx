@@ -2,7 +2,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { cn } from "../lib/utils";
 import { RootState } from "../store/todoStore";
-import { toggleTodo, removeTodo } from "../store/slices/todo-slice";
+import { toggleTodo, removeTodo } from "../store/slices/todoSlice";
 
 export function TodoList() {
   const dispatch = useDispatch();

@@ -1,5 +1,5 @@
 import { Layout } from "./components/Layout";
-import { TodoPage } from "./pages/TodoPage";
+import { TodoPage } from "./pages/todoPage";
 
 function App() {
   return (
