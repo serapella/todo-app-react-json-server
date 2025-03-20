@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, CheckIcon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { AppDispatch, RootState, Category } from "../store/todoStore";
@@ -11,6 +11,14 @@ import {
   CollapsibleTrigger,
 } from "./ui/collapsible";
 import { Todo } from "../store/slices/todoSlice";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export function TodoList() {
   const dispatch = useDispatch<AppDispatch>();
@@ -47,7 +55,7 @@ export function TodoList() {
     try {
       await dispatch(toggleTodoAsync(todo)).unwrap();
       toast.success(
-        `Task ${todo.completed ? "marked as incomplete" : "completed"}`,
+        `Task ${todo.completed ? "marked as incomplete" : "marked as complete"}`,
       );
     } catch (error) {
       toast.error("Failed to update task");
@@ -68,7 +76,7 @@ export function TodoList() {
       {filteredTodos.map((todo) => (
         <div
           key={todo.id}
-          className="bg-card flex items-center gap-3 rounded-lg border p-4 shadow-sm"
+          className="flex items-center gap-3 rounded-lg border p-4 bg-blend-darken shadow-sm"
         >
           <Toggle
             pressed={todo.completed}
@@ -76,7 +84,11 @@ export function TodoList() {
             size="sm"
             className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
           >
-            {todo.completed ? "Done" : "Click to Complete"}
+            {todo.completed ? (
+              <CheckIcon size={16} />
+            ) : (
+              <div className="h-4 w-4" />
+            )}
           </Toggle>
 
           <div className="flex-1">
@@ -90,7 +102,7 @@ export function TodoList() {
             </span>
             <Collapsible>
               <CollapsibleTrigger className="text-muted-foreground mt-2 cursor-pointer text-sm hover:underline">
-                {todo.description ? "Show Description" : "No Description"}
+                {todo.description ? "Extra Details " : "No Details"}
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <span className="text-muted-foreground text-sm">
@@ -110,14 +122,26 @@ export function TodoList() {
             {getCategoryName(todo.category)}
           </span>
 
-          <Button
-            onClick={() => {}}
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Pencil size={18} />
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <Pencil size={18} />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Todo</DialogTitle>
+                <DialogDescription>
+                  Make changes to your todo here. Click save when you're done.
+                </DialogDescription>
+              </DialogHeader>
+              {/* Add your edit form here */}
+            </DialogContent>
+          </Dialog>
 
           <Button
             onClick={() => handleRemove(todo.id)}

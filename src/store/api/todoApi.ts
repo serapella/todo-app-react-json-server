@@ -38,6 +38,20 @@ export const todoApi = {
     return response.json();
   },
 
+  async updateTodo(todo: Todo): Promise<Todo> {
+    const response = await fetch(`${API_URL}/todos/${todo.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(todo),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to update todo");
+    }
+    return response.json();
+  },
+
   async toggleTodo(todo: Todo): Promise<Todo> {
     const response = await fetch(`${API_URL}/todos/${todo.id}`, {
       method: "PATCH",
