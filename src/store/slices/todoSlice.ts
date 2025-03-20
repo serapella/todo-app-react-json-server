@@ -39,6 +39,11 @@ export const addTodoAsync = createAsyncThunk(
   async (todo: Omit<Todo, "id" | "completed">) => await todoApi.addTodo(todo),
 );
 
+export const updateTodoAsync = createAsyncThunk(
+  "todos/updateTodo",
+  async (todo: Todo) => await todoApi.updateTodo(todo),
+);
+
 export const toggleTodoAsync = createAsyncThunk(
   "todos/toggleTodo",
   async (todo: Todo) => await todoApi.toggleTodo(todo),
@@ -75,6 +80,14 @@ const todoSlice = createSlice({
       })
       .addCase(addTodoAsync.fulfilled, (state, action) => {
         state.todos.push(action.payload);
+      })
+      .addCase(updateTodoAsync.fulfilled, (state, action) => {
+        const index = state.todos.findIndex(
+          (todo) => todo.id === action.payload.id,
+        );
+        if (index !== -1) {
+          state.todos[index] = action.payload;
+        }
       })
       .addCase(toggleTodoAsync.fulfilled, (state, action) => {
         const index = state.todos.findIndex(

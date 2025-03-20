@@ -3,7 +3,7 @@
     {
       "id": "b4d40e03-6a37-4067-8b0b-cf95cb3f2c4b",
       "text": "magnesium",
-      "category": "4",
+      "category": "2",
       "description": "twice a day",
       "completed": false
     },
@@ -19,13 +19,6 @@
       "text": "dsfr",
       "category": "2",
       "description": "rererttr",
-      "completed": false
-    },
-    {
-      "id": "b9d95964-ddc5-4b96-b7aa-0ca4f3a11038",
-      "text": "fdff",
-      "category": "2",
-      "description": "",
       "completed": false
     }
   ],

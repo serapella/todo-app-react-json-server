@@ -1,8 +1,14 @@
+import { useState } from "react";
 import { Pencil, Trash2, CheckIcon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { AppDispatch, RootState, Category } from "../store/todoStore";
-import { toggleTodoAsync, removeTodoAsync } from "../store/slices/todoSlice";
+import {
+  toggleTodoAsync,
+  removeTodoAsync,
+  updateTodoAsync,
+  Todo,
+} from "../store/slices/todoSlice";
 import { Button } from "./ui/button";
 import { Toggle } from "./ui/toggle";
 import {
@@ -10,15 +16,25 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "./ui/collapsible";
-import { Todo } from "../store/slices/todoSlice";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 export function TodoList() {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,6 +42,11 @@ export function TodoList() {
   const { filter, statusFilter } = useSelector(
     (state: RootState) => state.filter,
   );
+
+  const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+  const [editText, setEditText] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editCategory, setEditCategory] = useState("");
 
   const filteredTodos = todos.filter((todo) => {
     const categoryMatch =
@@ -68,6 +89,32 @@ export function TodoList() {
       toast.success("Task removed successfully");
     } catch (error) {
       toast.error("Failed to remove task");
+    }
+  };
+
+  const handleEdit = (todo: Todo) => {
+    setEditingTodo(todo);
+    setEditText(todo.text);
+    setEditDescription(todo.description);
+    setEditCategory(todo.category);
+  };
+
+  const handleUpdate = async () => {
+    if (!editingTodo) return;
+
+    try {
+      await dispatch(
+        updateTodoAsync({
+          ...editingTodo,
+          text: editText.trim(),
+          description: editDescription.trim(),
+          category: editCategory,
+        }),
+      ).unwrap();
+      toast.success("Task updated successfully");
+      setEditingTodo(null);
+    } catch (error) {
+      toast.error("Failed to update task");
     }
   };
 
@@ -125,6 +172,7 @@ export function TodoList() {
           <Dialog>
             <DialogTrigger asChild>
               <Button
+                onClick={() => handleEdit(todo)}
                 variant="ghost"
                 size="icon"
                 className="text-muted-foreground hover:text-foreground"
@@ -132,14 +180,51 @@ export function TodoList() {
                 <Pencil size={18} />
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Edit Todo</DialogTitle>
+                <DialogTitle>Edit Task</DialogTitle>
                 <DialogDescription>
-                  Make changes to your todo here. Click save when you're done.
+                  Make changes to your task here. Click save when you're done.
                 </DialogDescription>
               </DialogHeader>
-              {/* Add your edit form here */}
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Input
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    placeholder="Task name"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Textarea
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    placeholder="Add a description..."
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Select value={editCategory} onValueChange={setEditCategory}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="secondary">Cancel</Button>
+                </DialogClose>
+                <DialogClose asChild>
+                  <Button onClick={handleUpdate}>Save changes</Button>
+                </DialogClose>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
 
