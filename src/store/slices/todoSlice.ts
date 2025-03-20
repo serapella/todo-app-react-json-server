@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { Category } from "../todoStore";
 import { todoApi } from "../api/todoApi";
+import { setTotalItems } from "./paginationSlice";
 
 export interface Todo {
   id: string;
@@ -24,9 +25,17 @@ const initialState: TodoState = {
   error: null,
 };
 
+interface FetchTodosParams {
+  page: number;
+  limit: number;
+}
+
 export const fetchTodos = createAsyncThunk(
   "todos/fetchTodos",
-  async () => await todoApi.fetchTodos(),
+  async (params: FetchTodosParams) => {
+    const response = await todoApi.fetchTodos(params.page, params.limit);
+    return response;
+  },
 );
 
 export const fetchCategories = createAsyncThunk(
@@ -68,7 +77,7 @@ const todoSlice = createSlice({
       })
       .addCase(fetchTodos.fulfilled, (state, action) => {
         state.loading = false;
-        state.todos = action.payload;
+        state.todos = action.payload.todos;
         state.error = null;
       })
       .addCase(fetchTodos.rejected, (state, action) => {

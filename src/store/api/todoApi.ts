@@ -3,13 +3,25 @@ import type { Category } from "../todoStore";
 
 const API_URL = "http://localhost:3001";
 
+interface FetchTodosResponse {
+  todos: Todo[];
+  total: number;
+}
+
 export const todoApi = {
-  async fetchTodos(): Promise<Todo[]> {
-    const response = await fetch(`${API_URL}/todos`);
+  async fetchTodos(
+    page: number = 1,
+    limit: number = 5,
+  ): Promise<FetchTodosResponse> {
+    const response = await fetch(
+      `${API_URL}/todos?_page=${page}&_limit=${limit}`,
+    );
     if (!response.ok) {
       throw new Error("Failed to fetch todos");
     }
-    return response.json();
+    const total = Number(response.headers.get("X-Total-Count") || "0");
+    const todos = await response.json();
+    return { todos, total };
   },
 
   async fetchCategories(): Promise<Category[]> {

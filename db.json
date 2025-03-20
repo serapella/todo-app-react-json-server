@@ -15,10 +15,31 @@
       "completed": false
     },
     {
-      "id": "9b353843-5c3c-48c4-896d-e66d84de87c8",
-      "text": "dsfr",
-      "category": "2",
-      "description": "rererttr",
+      "id": "d3f1a02f-b93f-4954-b51e-31518efa2293",
+      "text": "react",
+      "category": "5",
+      "description": "refresher training",
+      "completed": false
+    },
+    {
+      "id": "f520fbfc-fb8d-461e-9610-b8f4abe9328e",
+      "text": "laravel",
+      "category": "5",
+      "description": "",
+      "completed": false
+    },
+    {
+      "id": "8d6c1020-8996-4d69-926c-4f9cfa939721",
+      "text": "nodejs",
+      "category": "5",
+      "description": "",
+      "completed": false
+    },
+    {
+      "id": "2a46424a-1af8-4018-8001-930304dd7473",
+      "text": "earrings",
+      "category": "3",
+      "description": "jewelry",
       "completed": false
     }
   ],
