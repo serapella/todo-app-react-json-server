@@ -129,7 +129,7 @@ export function TodoList() {
             pressed={todo.completed}
             onPressedChange={() => handleToggle(todo)}
             size="sm"
-            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:border-primary border-2 border-gray-400"
           >
             {todo.completed ? (
               <CheckIcon size={16} />
@@ -183,9 +183,7 @@ export function TodoList() {
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>Edit Task</DialogTitle>
-                <DialogDescription>
-                  Make changes to your task here. Click save when you're done.
-                </DialogDescription>
+                <DialogDescription>Edit your task here</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
