@@ -1,5 +1,5 @@
-import type { Todo } from "../store/slices/todoSlice";
-import type { Category } from "../store/todoStore";
+import type { Todo } from "../slices/todoSlice";
+import type { Category } from "../todoStore";
 
 const API_URL = "http://localhost:3001";
 

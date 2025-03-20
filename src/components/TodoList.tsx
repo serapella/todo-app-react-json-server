@@ -1,5 +1,6 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 import { AppDispatch, RootState, Category } from "../store/todoStore";
 import { toggleTodoAsync, removeTodoAsync } from "../store/slices/todoSlice";
 import { Button } from "./ui/button";
@@ -9,21 +10,26 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "./ui/collapsible";
+import { Todo } from "../store/slices/todoSlice";
 
 export function TodoList() {
   const dispatch = useDispatch<AppDispatch>();
   const { todos, categories } = useSelector((state: RootState) => state.todo);
-  const { filter, statusFilter } = useSelector((state: RootState) => state.filter);
+  const { filter, statusFilter } = useSelector(
+    (state: RootState) => state.filter,
+  );
 
   const filteredTodos = todos.filter((todo) => {
     const categoryMatch =
-      filter === "All Categories" ? true : (filter as Category).id === todo.category;
+      filter === "All Categories"
+        ? true
+        : (filter as Category).id === todo.category;
     const statusMatch =
       statusFilter === "All Status"
         ? true
         : statusFilter === "Completed"
-        ? todo.completed
-        : !todo.completed;
+          ? todo.completed
+          : !todo.completed;
     return categoryMatch && statusMatch;
   });
 
@@ -37,6 +43,26 @@ export function TodoList() {
     return category?.name || "Uncategorized";
   };
 
+  const handleToggle = async (todo: Todo) => {
+    try {
+      await dispatch(toggleTodoAsync(todo)).unwrap();
+      toast.success(
+        `Task ${todo.completed ? "marked as incomplete" : "completed"}`,
+      );
+    } catch (error) {
+      toast.error("Failed to update task");
+    }
+  };
+
+  const handleRemove = async (id: string) => {
+    try {
+      await dispatch(removeTodoAsync(id)).unwrap();
+      toast.success("Task removed successfully");
+    } catch (error) {
+      toast.error("Failed to remove task");
+    }
+  };
+
   return (
     <div className="space-y-2">
       {filteredTodos.map((todo) => (
@@ -46,7 +72,7 @@ export function TodoList() {
         >
           <Checkbox
             checked={todo.completed}
-            onCheckedChange={() => dispatch(toggleTodoAsync(todo))}
+            onCheckedChange={() => handleToggle(todo)}
             className="border-input text-primary focus:ring-ring h-5 w-5 rounded"
           />
           <div className="flex-1">
@@ -87,7 +113,7 @@ export function TodoList() {
             <Pencil size={18} />
           </Button>
           <Button
-            onClick={() => dispatch(removeTodoAsync(todo.id))}
+            onClick={() => handleRemove(todo.id)}
             variant="ghost"
             size="icon"
             className="text-muted-foreground hover:text-destructive"

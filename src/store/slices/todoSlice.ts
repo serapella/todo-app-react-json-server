@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { Category } from "../todoStore";
-import { todoApi } from "../../api/todoApi";
+import { todoApi } from "../api/todoApi";
 
 export interface Todo {
   id: string;

@@ -6,6 +6,20 @@
       "category": "4",
       "description": "twice a day",
       "completed": false
+    },
+    {
+      "id": "9bdfd109-38ce-448c-918b-21ab9f00381b",
+      "text": "grind coffee",
+      "category": "2",
+      "description": "once a day",
+      "completed": false
+    },
+    {
+      "id": "9b353843-5c3c-48c4-896d-e66d84de87c8",
+      "text": "dsfr",
+      "category": "2",
+      "description": "rererttr",
+      "completed": false
     }
   ],
   "categories": [

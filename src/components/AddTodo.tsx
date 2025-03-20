@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
 import { AppDispatch, RootState } from "../store/todoStore";
 import { addTodoAsync } from "../store/slices/todoSlice";
 import { Button } from "./ui/button";
@@ -23,17 +24,26 @@ export function AddTodo() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!text.trim()) return;
+    if (!text.trim()) {
+      toast.error("Please enter a task");
+      return;
+    }
 
-    await dispatch(
-      addTodoAsync({
-        text: text.trim(),
-        category,
-        description: description.trim(),
-      }),
-    );
-    setText("");
-    setDescription("");
+    try {
+      await dispatch(
+        addTodoAsync({
+          text: text.trim(),
+          category,
+          description: description.trim(),
+        }),
+      ).unwrap();
+
+      toast.success("Task added successfully");
+      setText("");
+      setDescription("");
+    } catch (error) {
+      toast.error("Failed to add task");
+    }
   };
 
   return (
