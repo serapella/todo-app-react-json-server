@@ -42,7 +42,7 @@ export function Pagination() {
             <SelectValue placeholder={itemsPerPage} />
           </SelectTrigger>
           <SelectContent>
-            {[5, 10, 20, 50].map((value) => (
+            {[5, 10].map((value) => (
               <SelectItem key={value} value={String(value)}>
                 {value}
               </SelectItem>

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TodoList } from "../components/TodoList";
 import { TodoFilters } from "../components/TodoFilters";
+import { TodoStatistics } from "../components/TodoStatistics";
 import { AddTodo } from "../components/AddTodo";
 import { Pagination } from "../components/Pagination";
 import { AppDispatch, RootState } from "../store/todoStore";
@@ -16,13 +17,7 @@ export function TodoPage() {
 
   useEffect(() => {
     dispatch(fetchCategories());
-    dispatch(fetchTodos({ page: 1, limit: itemsPerPage }));
-  }, [dispatch, itemsPerPage]);
-
-  useEffect(() => {
-    if (currentPage > 1) {
-      dispatch(fetchTodos({ page: currentPage, limit: itemsPerPage }));
-    }
+    dispatch(fetchTodos({ page: currentPage, limit: itemsPerPage }));
   }, [dispatch, currentPage, itemsPerPage]);
 
   if (loading) {
@@ -39,6 +34,7 @@ export function TodoPage() {
 
   return (
     <div className="space-y-6">
+      <TodoStatistics />
       <AddTodo />
       <TodoFilters />
       <TodoList />

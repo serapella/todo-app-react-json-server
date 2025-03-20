@@ -32,8 +32,9 @@ interface FetchTodosParams {
 
 export const fetchTodos = createAsyncThunk(
   "todos/fetchTodos",
-  async (params: FetchTodosParams) => {
+  async (params: FetchTodosParams, { dispatch }) => {
     const response = await todoApi.fetchTodos(params.page, params.limit);
+    dispatch(setTotalItems(response.total));
     return response;
   },
 );
