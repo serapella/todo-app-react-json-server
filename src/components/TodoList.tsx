@@ -1,32 +1,29 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store/todoStore";
-import { toggleTodo, removeTodo } from "../store/slices/todoSlice";
+import { AppDispatch, RootState, Category } from "../store/todoStore";
+import { toggleTodoAsync, removeTodoAsync } from "../store/slices/todoSlice";
 import { Button } from "./ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "./ui/checkbox";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from "./ui/collapsible";
 
 export function TodoList() {
-  const dispatch = useDispatch();
-  const { todos, categories, filter, statusFilter } = useSelector(
-    (state: RootState) => state.todo,
-  );
+  const dispatch = useDispatch<AppDispatch>();
+  const { todos, categories } = useSelector((state: RootState) => state.todo);
+  const { filter, statusFilter } = useSelector((state: RootState) => state.filter);
 
   const filteredTodos = todos.filter((todo) => {
     const categoryMatch =
-      filter === "All Categories"
-        ? true
-        : categories.find((c) => c.id === todo.category)?.name === filter;
+      filter === "All Categories" ? true : (filter as Category).id === todo.category;
     const statusMatch =
       statusFilter === "All Status"
         ? true
         : statusFilter === "Completed"
-          ? todo.completed
-          : !todo.completed;
+        ? todo.completed
+        : !todo.completed;
     return categoryMatch && statusMatch;
   });
 
@@ -49,10 +46,9 @@ export function TodoList() {
         >
           <Checkbox
             checked={todo.completed}
-            onCheckedChange={() => dispatch(toggleTodo(todo.id))}
+            onCheckedChange={() => dispatch(toggleTodoAsync(todo))}
             className="border-input text-primary focus:ring-ring h-5 w-5 rounded"
           />
-
           <div className="flex-1">
             <span
               className={
@@ -82,17 +78,19 @@ export function TodoList() {
           >
             {getCategoryName(todo.category)}
           </span>
-
           <Button
             onClick={() => {}}
-            className="text-muted-foreground hover:text-foreground p-1"
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-foreground"
           >
             <Pencil size={18} />
           </Button>
-
           <Button
-            onClick={() => dispatch(removeTodo(todo.id))}
-            className="text-muted-foreground hover:text-destructive p-1"
+            onClick={() => dispatch(removeTodoAsync(todo.id))}
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-destructive"
           >
             <Trash2 size={18} />
           </Button>

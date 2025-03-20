@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { ThemeProvider } from "./components/theme-provider";
 import { store } from "./store/todoStore";
-import App from "./App.tsx";
+import App from "./App";
 import "./style.css";
 
 createRoot(document.getElementById("root")!).render(

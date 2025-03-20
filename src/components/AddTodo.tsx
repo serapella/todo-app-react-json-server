@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Plus } from "lucide-react";
-import { RootState } from "../store/todoStore";
-import { addTodo } from "../store/slices/todoSlice";
+import { AppDispatch, RootState } from "../store/todoStore";
+import { addTodoAsync } from "../store/slices/todoSlice";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -15,18 +15,18 @@ import {
 } from "./ui/select";
 
 export function AddTodo() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { categories } = useSelector((state: RootState) => state.todo);
   const [text, setText] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(categories[0]?.id || "");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim()) return;
 
-    dispatch(
-      addTodo({
+    await dispatch(
+      addTodoAsync({
         text: text.trim(),
         category,
         description: description.trim(),
@@ -44,7 +44,7 @@ export function AddTodo() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Add a new todo..."
-          className="w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800"
+          className="w-full"
         />
       </div>
 
@@ -53,13 +53,13 @@ export function AddTodo() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Add a description..."
-          rows={3}
+          className="min-h-[80px]"
         />
       </div>
 
       <div className="flex gap-2">
         <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger className="flex-1 rounded-md border px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800">
+          <SelectTrigger className="flex-1">
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
           <SelectContent>
@@ -70,8 +70,9 @@ export function AddTodo() {
             ))}
           </SelectContent>
         </Select>
-        <Button className="flex items-center gap-2 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-          <Plus size={20} />
+
+        <Button type="submit" className="flex items-center gap-2">
+          <Plus className="h-5 w-5" />
           Add Todo
         </Button>
       </div>

@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/todoStore";
-import { setFilter, setStatusFilter } from "../store/slices/todoSlice";
+import { setFilter, setStatusFilter } from "../store/slices/filterSlice";
+import { Category } from "../store/todoStore";
 import {
   Select,
   SelectContent,
@@ -11,15 +12,23 @@ import {
 
 export function TodoFilters() {
   const dispatch = useDispatch();
-  const { categories, filter, statusFilter } = useSelector(
-    (state: RootState) => state.todo,
-  );
+  const { categories } = useSelector((state: RootState) => state.todo);
+  const { filter, statusFilter } = useSelector((state: RootState) => state.filter);
+
+  const handleCategoryChange = (value: string) => {
+    if (value === "All Categories") {
+      dispatch(setFilter("All Categories"));
+    } else {
+      const selected = categories.find((cat) => cat.name === value);
+      if (selected) dispatch(setFilter(selected));
+    }
+  };
 
   return (
     <div className="mb-4 flex gap-2">
       <Select
-        value={filter}
-        onValueChange={(value) => dispatch(setFilter(value))}
+        value={typeof filter === "object" ? filter.name : filter}
+        onValueChange={handleCategoryChange}
       >
         <SelectTrigger className="min-w-[180px]">
           <SelectValue placeholder="Select category" />
@@ -33,10 +42,11 @@ export function TodoFilters() {
           ))}
         </SelectContent>
       </Select>
-
       <Select
         value={statusFilter}
-        onValueChange={(value) => dispatch(setStatusFilter(value))}
+        onValueChange={(value) =>
+          dispatch(setStatusFilter(value as "All Status" | "Completed" | "Active"))
+        }
       >
         <SelectTrigger className="min-w-[180px]">
           <SelectValue placeholder="Select status" />

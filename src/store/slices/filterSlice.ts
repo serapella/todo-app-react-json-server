@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { TodoCategory } from "../todoStore";
+import { Category } from "../todoStore";
 
 interface FilterState {
-  filter: TodoCategory | "All Categories";
+  filter: Category | "All Categories";
   statusFilter: "All Status" | "Completed" | "Active";
 }
 
@@ -15,10 +15,7 @@ export const filterSlice = createSlice({
   name: "filter",
   initialState,
   reducers: {
-    setFilter: (
-      state,
-      action: PayloadAction<TodoCategory | "All Categories">,
-    ) => {
+    setFilter: (state, action: PayloadAction<Category | "All Categories">) => {
       state.filter = action.payload;
     },
     setStatusFilter: (

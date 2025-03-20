@@ -1,7 +1,8 @@
+import { type ReactNode } from "react";
 import { ModeToggle } from "./ui/mode-toggle";
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
