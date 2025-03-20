@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { AppDispatch, RootState, Category } from "../store/todoStore";
 import { toggleTodoAsync, removeTodoAsync } from "../store/slices/todoSlice";
 import { Button } from "./ui/button";
-import { Checkbox } from "./ui/checkbox";
+import { Toggle } from "./ui/toggle";
 import {
   Collapsible,
   CollapsibleContent,
@@ -70,11 +70,15 @@ export function TodoList() {
           key={todo.id}
           className="bg-card flex items-center gap-3 rounded-lg border p-4 shadow-sm"
         >
-          <Checkbox
-            checked={todo.completed}
-            onCheckedChange={() => handleToggle(todo)}
-            className="border-input text-primary focus:ring-ring h-5 w-5 rounded"
-          />
+          <Toggle
+            pressed={todo.completed}
+            onPressedChange={() => handleToggle(todo)}
+            size="sm"
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          >
+            {todo.completed ? "Done" : "Click to Complete"}
+          </Toggle>
+
           <div className="flex-1">
             <span
               className={
@@ -95,6 +99,7 @@ export function TodoList() {
               </CollapsibleContent>
             </Collapsible>
           </div>
+
           <span
             className="rounded-full px-3 py-1 text-sm font-medium"
             style={{
@@ -104,6 +109,7 @@ export function TodoList() {
           >
             {getCategoryName(todo.category)}
           </span>
+
           <Button
             onClick={() => {}}
             variant="ghost"
@@ -112,6 +118,7 @@ export function TodoList() {
           >
             <Pencil size={18} />
           </Button>
+
           <Button
             onClick={() => handleRemove(todo.id)}
             variant="ghost"
