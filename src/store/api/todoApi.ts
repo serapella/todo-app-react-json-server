@@ -1,7 +1,7 @@
 import type { Todo } from "../slices/todoSlice";
 import type { Category } from "../todoStore";
 
-const API_URL = "https://obtainable-grateful-lute.glitch.me";
+const API_URL = "https://todo-app-react-json-server.onrender.com";
 
 interface FetchTodosResponse {
   todos: Todo[];
