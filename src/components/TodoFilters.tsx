@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/todoStore";
 import { setFilter, setStatusFilter } from "../store/slices/filterSlice";
-import { Category } from "../store/todoStore";
 import {
   Select,
   SelectContent,
@@ -13,7 +12,9 @@ import {
 export function TodoFilters() {
   const dispatch = useDispatch();
   const { categories } = useSelector((state: RootState) => state.todo);
-  const { filter, statusFilter } = useSelector((state: RootState) => state.filter);
+  const { filter, statusFilter } = useSelector(
+    (state: RootState) => state.filter,
+  );
 
   const handleCategoryChange = (value: string) => {
     if (value === "All Categories") {
@@ -45,7 +46,9 @@ export function TodoFilters() {
       <Select
         value={statusFilter}
         onValueChange={(value) =>
-          dispatch(setStatusFilter(value as "All Status" | "Completed" | "Active"))
+          dispatch(
+            setStatusFilter(value as "All Status" | "Completed" | "Active"),
+          )
         }
       >
         <SelectTrigger className="min-w-[180px]">
