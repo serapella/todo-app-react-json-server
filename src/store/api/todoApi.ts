@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Todo } from "@/types/todo";
 import { Category } from "../todoStore";
 
-const API_URL = "http://localhost:3001";
+const API_URL = "https://myapionglitch.glitch.me";
 
 export const todoApi = createApi({
   reducerPath: 'todoApi',
