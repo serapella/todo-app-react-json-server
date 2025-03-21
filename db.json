@@ -41,6 +41,13 @@
       "category": "3",
       "description": "jewelry",
       "completed": false
+    },
+    {
+      "id": "05d5d859-e3bf-4ced-b268-c7c7ec7280bf",
+      "text": "dfdfdf",
+      "category": "1",
+      "description": "frgfg",
+      "completed": false
     }
   ],
   "categories": [
