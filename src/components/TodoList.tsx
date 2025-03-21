@@ -1,14 +1,9 @@
 import { useState } from "react";
 import { Pencil, Trash2, CheckIcon } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "sonner";
-import { AppDispatch, RootState, Category } from "../store/todoStore";
-import {
-  toggleTodoAsync,
-  removeTodoAsync,
-  updateTodoAsync,
-  Todo,
-} from "../store/slices/todoSlice";
+import { RootState } from "../store/todoStore";
+import type { Todo } from "../types/todo";
 import { Button } from "./ui/button";
 import { Toggle } from "./ui/toggle";
 import {
@@ -35,30 +30,72 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import {
+  useGetTodosQuery,
+  useToggleTodoMutation,
+  useRemoveTodoMutation,
+  useUpdateTodoMutation,
+  useGetCategoriesQuery,
+} from "../store/api/todoApi";
 
 export function TodoList() {
-  const dispatch = useDispatch<AppDispatch>();
-  const { todos, categories } = useSelector((state: RootState) => state.todo);
-  const { filter, statusFilter } = useSelector(
-    (state: RootState) => state.filter,
+  const { filter, statusFilter } = useSelector((state: RootState) => state.filter);
+  const { currentPage, itemsPerPage } = useSelector(
+    (state: RootState) => state.pagination
   );
+
+  const { data: todosData, isLoading: todosLoading, error: todosError } = useGetTodosQuery({
+    page: currentPage,
+    limit: itemsPerPage,
+  });
+  const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useGetCategoriesQuery();
+  const [toggleTodo, { isLoading: isToggling }] = useToggleTodoMutation();
+  const [removeTodo, { isLoading: isRemoving }] = useRemoveTodoMutation();
+  const [updateTodo, { isLoading: isUpdating }] = useUpdateTodoMutation();
 
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [editText, setEditText] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editCategory, setEditCategory] = useState("");
 
-  const filteredTodos = todos.filter((todo) => {
+  if (todosLoading || categoriesLoading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (todosError || categoriesError) {
+    return (
+      <div className="py-4 text-center text-red-500">
+        Error: Failed to fetch data
+      </div>
+    );
+  }
+
+  if (!todosData) {
+    return (
+      <div className="py-4 text-center text-muted-foreground">
+        No todos found
+      </div>
+    );
+  }
+
+  const filteredTodos = todosData.todos.filter((todo) => {
+    const selectedCategory = categories.find((c) => c.name === filter);
     const categoryMatch =
       filter === "All Categories"
         ? true
-        : (filter as Category).id === todo.category;
+        : selectedCategory && selectedCategory.id === todo.category;
+    
     const statusMatch =
       statusFilter === "All Status"
         ? true
         : statusFilter === "Completed"
-          ? todo.completed
-          : !todo.completed;
+        ? todo.completed
+        : !todo.completed;
+    
     return categoryMatch && statusMatch;
   });
 
@@ -74,9 +111,9 @@ export function TodoList() {
 
   const handleToggle = async (todo: Todo) => {
     try {
-      await dispatch(toggleTodoAsync(todo)).unwrap();
+      await toggleTodo(todo).unwrap();
       toast.success(
-        `Task ${todo.completed ? "marked as incomplete" : "marked as complete"}`,
+        `Task ${todo.completed ? "marked as incomplete" : "marked as complete"}`
       );
     } catch (error) {
       toast.error("Failed to update task");
@@ -85,7 +122,7 @@ export function TodoList() {
 
   const handleRemove = async (id: string) => {
     try {
-      await dispatch(removeTodoAsync(id)).unwrap();
+      await removeTodo(id).unwrap();
       toast.success("Task removed successfully");
     } catch (error) {
       toast.error("Failed to remove task");
@@ -103,14 +140,12 @@ export function TodoList() {
     if (!editingTodo) return;
 
     try {
-      await dispatch(
-        updateTodoAsync({
-          ...editingTodo,
-          text: editText.trim(),
-          description: editDescription.trim(),
-          category: editCategory,
-        }),
-      ).unwrap();
+      await updateTodo({
+        ...editingTodo,
+        text: editText.trim(),
+        description: editDescription.trim(),
+        category: editCategory,
+      }).unwrap();
       toast.success("Task updated successfully");
       setEditingTodo(null);
     } catch (error) {
@@ -130,6 +165,7 @@ export function TodoList() {
             onPressedChange={() => handleToggle(todo)}
             size="sm"
             className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:border-primary border-2 border-gray-400"
+            disabled={isToggling}
           >
             {todo.completed ? (
               <CheckIcon size={16} />
@@ -176,6 +212,7 @@ export function TodoList() {
                 variant="ghost"
                 size="icon"
                 className="text-muted-foreground hover:text-foreground"
+                disabled={isUpdating}
               >
                 <Pencil size={18} />
               </Button>
@@ -191,6 +228,7 @@ export function TodoList() {
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
                     placeholder="Task name"
+                    disabled={isUpdating}
                   />
                 </div>
                 <div className="grid gap-2">
@@ -198,10 +236,11 @@ export function TodoList() {
                     value={editDescription}
                     onChange={(e) => setEditDescription(e.target.value)}
                     placeholder="Add a description..."
+                    disabled={isUpdating}
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Select value={editCategory} onValueChange={setEditCategory}>
+                  <Select value={editCategory} onValueChange={setEditCategory} disabled={isUpdating}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
@@ -217,10 +256,12 @@ export function TodoList() {
               </div>
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button variant="secondary">Cancel</Button>
+                  <Button variant="secondary" disabled={isUpdating}>Cancel</Button>
                 </DialogClose>
                 <DialogClose asChild>
-                  <Button onClick={handleUpdate}>Save changes</Button>
+                  <Button onClick={handleUpdate} disabled={isUpdating}>
+                    {isUpdating ? "Saving..." : "Save changes"}
+                  </Button>
                 </DialogClose>
               </DialogFooter>
             </DialogContent>
@@ -231,6 +272,7 @@ export function TodoList() {
             variant="ghost"
             size="icon"
             className="text-muted-foreground hover:text-destructive"
+            disabled={isRemoving}
           >
             <Trash2 size={18} />
           </Button>

@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { AppDispatch, RootState } from "../store/todoStore";
-import { addTodoAsync } from "../store/slices/todoSlice";
+import { useAddTodoMutation, useGetCategoriesQuery } from "../store/api/todoApi";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -16,8 +14,9 @@ import {
 } from "./ui/select";
 
 export function AddTodo() {
-  const dispatch = useDispatch<AppDispatch>();
-  const { categories } = useSelector((state: RootState) => state.todo);
+  const { data: categories = [] } = useGetCategoriesQuery();
+  const [addTodo, { isLoading }] = useAddTodoMutation();
+  
   const [text, setText] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(categories[0]?.id || "");
@@ -30,14 +29,12 @@ export function AddTodo() {
     }
 
     try {
-      await dispatch(
-        addTodoAsync({
-          text: text.trim(),
-          category,
-          description: description.trim(),
-        }),
-      ).unwrap();
-
+      await addTodo({
+        text: text.trim(),
+        category,
+        description: description.trim(),
+      }).unwrap();
+      
       toast.success("Task added successfully");
       setText("");
       setDescription("");
@@ -55,6 +52,7 @@ export function AddTodo() {
           onChange={(e) => setText(e.target.value)}
           placeholder="Add a new todo..."
           className="w-full"
+          disabled={isLoading}
         />
       </div>
 
@@ -64,11 +62,12 @@ export function AddTodo() {
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Add a description..."
           className="min-h-[80px]"
+          disabled={isLoading}
         />
       </div>
 
       <div className="flex gap-2">
-        <Select value={category} onValueChange={setCategory}>
+        <Select value={category} onValueChange={setCategory} disabled={isLoading}>
           <SelectTrigger className="flex-1">
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
@@ -81,7 +80,7 @@ export function AddTodo() {
           </SelectContent>
         </Select>
 
-        <Button type="submit" className="flex items-center gap-2">
+        <Button type="submit" className="flex items-center gap-2" disabled={isLoading}>
           <Plus className="h-5 w-5" />
           Add Todo
         </Button>

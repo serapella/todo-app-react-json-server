@@ -1,91 +1,79 @@
-import type { Todo } from "../slices/todoSlice";
-import type { Category } from "../todoStore";
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { Todo } from "@/types/todo";
+import { Category } from "../todoStore";
 
-const API_URL = "https://todo-app-react-json-server.onrender.com";
+const API_URL = "http://localhost:3001";
 
-interface FetchTodosResponse {
-  todos: Todo[];
-  total: number;
-}
-
-export const todoApi = {
-  async fetchTodos(
-    page: number = 1,
-    limit: number = 5,
-  ): Promise<FetchTodosResponse> {
-    const response = await fetch(
-      `${API_URL}/todos?_page=${page}&_limit=${limit}`,
-    );
-    if (!response.ok) {
-      throw new Error("Failed to fetch todos");
-    }
-    const total = Number(response.headers.get("X-Total-Count") || "0");
-    const todos = await response.json();
-    return { todos, total };
-  },
-
-  async fetchCategories(): Promise<Category[]> {
-    const response = await fetch(`${API_URL}/categories`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch categories");
-    }
-    return response.json();
-  },
-
-  async addTodo(todo: Omit<Todo, "id" | "completed">): Promise<Todo> {
-    const response = await fetch(`${API_URL}/todos`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...todo,
-        completed: false,
-        id: crypto.randomUUID(),
+export const todoApi = createApi({
+  reducerPath: 'todoApi',
+  baseQuery: fetchBaseQuery({ baseUrl: API_URL }),
+  tagTypes: ['todos'],
+  endpoints: (builder) => ({
+    getTodos: builder.query<{ todos: Todo[]; total: number }, { page: number; limit: number }>({
+      query: ({ page = 1, limit = 5 }) => ({
+        url: `todos`,
+        params: { _page: page, _limit: limit },
       }),
-    });
-    if (!response.ok) {
-      throw new Error("Failed to add todo");
-    }
-    return response.json();
-  },
-
-  async updateTodo(todo: Todo): Promise<Todo> {
-    const response = await fetch(`${API_URL}/todos/${todo.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
+      transformResponse(todos: Todo[], meta) {
+        return {
+          todos,
+          total: Number(meta?.response?.headers.get("X-Total-Count") || "0"),
+        };
       },
-      body: JSON.stringify(todo),
-    });
-    if (!response.ok) {
-      throw new Error("Failed to update todo");
-    }
-    return response.json();
-  },
+      providesTags: ['todos'],
+    }),
 
-  async toggleTodo(todo: Todo): Promise<Todo> {
-    const response = await fetch(`${API_URL}/todos/${todo.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        completed: !todo.completed,
+    getCategories: builder.query<Category[], void>({
+      query: () => 'categories',
+      providesTags: ['todos'],
+    }),
+
+    addTodo: builder.mutation<Todo, Omit<Todo, 'id' | 'completed'>>({
+      query: (todo) => ({
+        url: 'todos',
+        method: 'POST',
+        body: {
+          ...todo,
+          completed: false,
+          id: crypto.randomUUID(),
+        },
       }),
-    });
-    if (!response.ok) {
-      throw new Error("Failed to toggle todo");
-    }
-    return response.json();
-  },
+      invalidatesTags: ['todos'],
+    }),
 
-  async removeTodo(id: string): Promise<void> {
-    const response = await fetch(`${API_URL}/todos/${id}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      throw new Error("Failed to remove todo");
-    }
-  },
-};
+    updateTodo: builder.mutation<Todo, Todo>({
+      query: (todo) => ({
+        url: `todos/${todo.id}`,
+        method: 'PATCH',
+        body: todo,
+      }),
+      invalidatesTags: ['todos'],
+    }),
+
+    toggleTodo: builder.mutation<Todo, Todo>({
+      query: (todo) => ({
+        url: `todos/${todo.id}`,
+        method: 'PATCH',
+        body: { completed: !todo.completed },
+      }),
+      invalidatesTags: ['todos'],
+    }),
+
+    removeTodo: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `todos/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['todos'],
+    }),
+  }),
+});
+
+export const {
+  useGetTodosQuery,
+  useGetCategoriesQuery,
+  useAddTodoMutation,
+  useUpdateTodoMutation,
+  useToggleTodoMutation,
+  useRemoveTodoMutation,
+} = todoApi;
