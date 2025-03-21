@@ -1,7 +1,7 @@
 import type { Todo } from "../slices/todoSlice";
 import type { Category } from "../todoStore";
 
-const API_URL = "https://bony-polarized-ice.glitch.me";
+const API_URL = "http://localhost:3001";
 
 interface FetchTodosResponse {
   todos: Todo[];

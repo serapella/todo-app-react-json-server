@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "json-server --watch db.json --port 3001",
-    "start": "json-server --watch db.json --port 3001"
+    "start": "npm run server & npm run dev"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",
